@@ -9,8 +9,12 @@ import EventNoteIcon from '@mui/icons-material/EventNote';
 import Post from './Post';
 import { db } from './firebase';
 import firebase from 'firebase/compat/app';
+import { useSelector } from 'react-redux';
+import { selectUser } from './features/userSlice';
+import FlipMove from 'react-flip-move';
 
 const Feed = () => {
+    const user = useSelector(selectUser);
     const [input, setInput] = useState('');
 
     const [posts, setPosts] = useState([]);
@@ -30,10 +34,10 @@ const Feed = () => {
         e.preventDefault();
 
         db.collection('posts').add({
-            name: 'Emmanuel Taiwo',
-            description: 'This is a test',
+            name: user.displayName,
+            description: user.email,
             message: input,
-            photoUrl: '',
+            photoUrl: user.photoUrl || '',
             timestamp: firebase.firestore.FieldValue.serverTimestamp(),
         })
 
@@ -58,6 +62,7 @@ const Feed = () => {
             </div>
         </div>
 
+        <FlipMove>
         {posts.map(({ id, data: { name, description, message, photoUrl } }) => (
             <Post 
             key={id} 
@@ -67,6 +72,7 @@ const Feed = () => {
             photoUrl={photoUrl}
             />
         ))}
+        </FlipMove>
     </div>
   )
 }
